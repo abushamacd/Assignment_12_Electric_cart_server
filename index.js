@@ -23,6 +23,7 @@ async function run() {
   try {
     await client.connect();
     const productCollection = client.db("electricCart").collection("products");
+    const orderCollection = client.db("electricCart").collection("orders");
     //  Get all products
     app.get("/product", async (req, res) => {
       const query = {};
@@ -36,6 +37,13 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const inventory = await productCollection.findOne(query);
       res.send(inventory);
+    });
+
+    // Add order
+    app.post("/order", async (req, res) => {
+      const order = req.body;
+      const result = await orderCollection.insertOne(order);
+      res.send(result);
     });
   } finally {
     //   await client.close();
