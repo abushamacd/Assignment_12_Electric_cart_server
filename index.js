@@ -24,6 +24,7 @@ async function run() {
     await client.connect();
     const productCollection = client.db("electricCart").collection("products");
     const orderCollection = client.db("electricCart").collection("orders");
+    const userCollection = client.db("electricCart").collection("users");
     //  Get all products
     app.get("/product", async (req, res) => {
       const query = {};
@@ -45,6 +46,22 @@ async function run() {
       const result = await orderCollection.insertOne(order);
       res.send(result);
     });
+
+    // Add and Update user
+    app.put("/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      console.log(user);
+      const filter = { email: email };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: user,
+      };
+      const result = await userCollection.updateOne(filter, updateDoc, options);
+      res.send(result);
+    });
+
+    // Gap
   } finally {
     //   await client.close();
   }
