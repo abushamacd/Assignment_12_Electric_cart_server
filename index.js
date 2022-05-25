@@ -69,7 +69,6 @@ async function run() {
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
       const user = req.body;
-      console.log(user);
       const filter = { email: email };
       const options = { upsert: true };
       const updateDoc = {
@@ -80,6 +79,16 @@ async function run() {
         expiresIn: "1d",
       });
       res.send({ result, token });
+    });
+
+    // Get specific user info
+    app.get("/user/:email", verifyJWT, async (req, res) => {
+      const email = req.params.email;
+      const decodedEmail = req.decoded.email;
+      if (email === decodedEmail) {
+        const user = await userCollection.findOne({ email: email });
+        res.send(user);
+      }
     });
 
     // Gap
