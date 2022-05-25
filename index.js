@@ -104,6 +104,13 @@ async function run() {
       res.send(result);
     });
 
+    // Get all review
+    app.get("/review", async (req, res) => {
+      const query = {};
+      const review = await reviewCollection.find(query).toArray();
+      res.send(review);
+    });
+
     // Gap
   } finally {
     //   await client.close();
