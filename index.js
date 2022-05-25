@@ -65,6 +65,14 @@ async function run() {
       res.send(result);
     });
 
+    // Get User order
+    app.get("/order", async (req, res) => {
+      const email = req.query.email;
+      const query = { email: email };
+      const orders = await orderCollection.find(query).toArray();
+      res.send(orders);
+    });
+
     // Add and Update user
     app.put("/user/:email", async (req, res) => {
       const email = req.params.email;
@@ -82,13 +90,10 @@ async function run() {
     });
 
     // Get specific user info
-    app.get("/user/:email", verifyJWT, async (req, res) => {
+    app.get("/user/:email", async (req, res) => {
       const email = req.params.email;
-      const decodedEmail = req.decoded.email;
-      if (email === decodedEmail) {
-        const user = await userCollection.findOne({ email: email });
-        res.send(user);
-      }
+      const user = await userCollection.findOne({ email: email });
+      res.send(user);
     });
 
     // Gap
