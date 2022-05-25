@@ -43,6 +43,7 @@ async function run() {
     const productCollection = client.db("electricCart").collection("products");
     const orderCollection = client.db("electricCart").collection("orders");
     const userCollection = client.db("electricCart").collection("users");
+    const reviewCollection = client.db("electricCart").collection("reviews");
     //  Get all products
     app.get("/product", async (req, res) => {
       const query = {};
@@ -94,6 +95,13 @@ async function run() {
       const email = req.params.email;
       const user = await userCollection.findOne({ email: email });
       res.send(user);
+    });
+
+    // Add review
+    app.post("/review", async (req, res) => {
+      const review = req.body;
+      const result = await reviewCollection.insertOne(review);
+      res.send(result);
     });
 
     // Gap
