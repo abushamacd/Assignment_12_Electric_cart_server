@@ -4,6 +4,8 @@ const port = process.env.PORT || 5000;
 const cors = require("cors");
 require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+// JWT
+const jwt = require("jsonwebtoken");
 
 // Use Middleware
 app.use(cors());
@@ -58,7 +60,10 @@ async function run() {
         $set: user,
       };
       const result = await userCollection.updateOne(filter, updateDoc, options);
-      res.send(result);
+      const token = jwt.sign({ email: email }, process.env.ACCESS_TOKEN, {
+        expiresIn: "1d",
+      });
+      res.send({ result, token });
     });
 
     // Gap
