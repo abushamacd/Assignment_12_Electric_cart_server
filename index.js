@@ -170,7 +170,7 @@ async function run() {
     });
 
     // Order Delete
-    app.delete("/order/:id", verifyJWT, verifyAdmin, async (req, res) => {
+    app.delete("/order/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       console.log(id);
       const filter = { _id: ObjectId(id) };
