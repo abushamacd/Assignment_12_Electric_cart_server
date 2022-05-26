@@ -179,7 +179,6 @@ async function run() {
     // Product Delete
     app.delete("/product/:id", verifyJWT, verifyAdmin, async (req, res) => {
       const id = req.params.id;
-      console.log(id);
       const filter = { _id: ObjectId(id) };
       const result = await productCollection.deleteOne(filter);
       res.send(result);
@@ -188,7 +187,6 @@ async function run() {
     // Order Delete for user and admin
     app.delete("/order/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
-      console.log(id);
       const filter = { _id: ObjectId(id) };
       const result = await orderCollection.deleteOne(filter);
       res.send(result);
