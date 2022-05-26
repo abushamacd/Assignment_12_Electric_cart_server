@@ -6,6 +6,8 @@ require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 // JWT
 const jwt = require("jsonwebtoken");
+// Payment
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 // Use Middleware
 app.use(cors());
@@ -44,6 +46,7 @@ async function run() {
     const orderCollection = client.db("electricCart").collection("orders");
     const userCollection = client.db("electricCart").collection("users");
     const reviewCollection = client.db("electricCart").collection("reviews");
+    const paymentCollection = client.db("electricCart").collection("payments");
 
     // Admin varify
     const verifyAdmin = async (req, res, next) => {
@@ -57,6 +60,19 @@ async function run() {
         res.status(403).send({ message: "forbidden" });
       }
     };
+
+    // Payment Intent API
+    app.post("/create-payment-intent", verifyJWT, async (req, res) => {
+      const order = req.body;
+      const price = parseFloat(order.price);
+      const amount = price * 100;
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: "usd",
+        payment_method_types: ["card"],
+      });
+      res.send({ clientSecret: paymentIntent.client_secret });
+    });
 
     //  Get all products
     app.get("/product", async (req, res) => {
@@ -184,6 +200,23 @@ async function run() {
       const query = { _id: ObjectId(id) };
       const order = await orderCollection.findOne(query);
       res.send(order);
+    });
+
+    // Update order after payment
+    app.patch("/order/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const payment = req.body;
+      const filter = { _id: ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          paid: true,
+          transactionId: payment.transactionId,
+        },
+      };
+
+      const result = await paymentCollection.insertOne(payment);
+      const updatedOrder = await orderCollection.updateOne(filter, updatedDoc);
+      res.send(updatedOrder);
     });
 
     // Gap
