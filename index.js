@@ -129,13 +129,13 @@ async function run() {
     });
 
     // get all user
-    app.get("/user", async (req, res) => {
+    app.get("/user", verifyJWT, verifyAdmin, async (req, res) => {
       const users = await userCollection.find().toArray();
       res.send(users);
     });
 
     // Admin check API
-    app.get("/admin/:email", async (req, res) => {
+    app.get("/admin/:email", verifyJWT, verifyAdmin, async (req, res) => {
       const email = req.params.email;
       const user = await userCollection.findOne({ email: email });
       const isAdmin = user.role === "admin";
@@ -154,9 +154,9 @@ async function run() {
     });
 
     // Add product
-    app.post("/product", async (req, res) => {
+    app.post("/product", verifyJWT, verifyAdmin, async (req, res) => {
       const product = req.body;
-      const result = await reviewCollection.insertOne(product);
+      const result = await productCollection.insertOne(product);
       res.send(result);
     });
 
