@@ -111,6 +111,12 @@ async function run() {
       res.send(review);
     });
 
+    // get all user
+    app.get("/user", async (req, res) => {
+      const users = await userCollection.find().toArray();
+      res.send(users);
+    });
+
     // Gap
   } finally {
     //   await client.close();
