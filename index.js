@@ -169,13 +169,21 @@ async function run() {
       res.send(result);
     });
 
-    // Order Delete
+    // Order Delete for user and admin
     app.delete("/order/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
       console.log(id);
       const filter = { _id: ObjectId(id) };
       const result = await orderCollection.deleteOne(filter);
       res.send(result);
+    });
+
+    // Find order by id for payment
+    app.get("/order/:id", verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const order = await orderCollection.findOne(query);
+      res.send(order);
     });
 
     // Gap
