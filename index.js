@@ -153,6 +153,13 @@ async function run() {
       res.send(result);
     });
 
+    // Add product
+    app.post("/product", async (req, res) => {
+      const product = req.body;
+      const result = await reviewCollection.insertOne(product);
+      res.send(result);
+    });
+
     // Gap
   } finally {
     //   await client.close();
