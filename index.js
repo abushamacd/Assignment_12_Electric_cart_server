@@ -15,12 +15,12 @@ app.use(express.json());
 function verifyJWT(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
-    return res.status(401).send({ message: "Unauthorized access" });
+    return res.status(401).send({ message: "UnAuthorized access" });
   }
   const token = authHeader.split(" ")[1];
   jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
     if (err) {
-      res.status(403).send({ message: "Forbidden access" });
+      return res.status(403).send({ message: "Forbidden access" });
     }
     req.decoded = decoded;
     next();
@@ -115,6 +115,17 @@ async function run() {
     app.get("/user", async (req, res) => {
       const users = await userCollection.find().toArray();
       res.send(users);
+    });
+
+    // Make admin
+    app.put("/user/admin/:email", verifyJWT, async (req, res) => {
+      const email = req.params.email;
+      const filter = { email: email };
+      const updateDoc = {
+        $set: { role: "admin" },
+      };
+      const result = await userCollection.updateOne(filter, updateDoc);
+      res.send(result);
     });
 
     // Gap
