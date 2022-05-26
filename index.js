@@ -169,6 +169,15 @@ async function run() {
       res.send(result);
     });
 
+    // Order Delete
+    app.delete("/order/:id", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const filter = { _id: ObjectId(id) };
+      const result = await orderCollection.deleteOne(filter);
+      res.send(result);
+    });
+
     // Gap
   } finally {
     //   await client.close();
